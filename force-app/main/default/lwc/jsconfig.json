@@ -5,6 +5,9 @@
         "paths": {
             "c/sfdx_lwc": [
                 "sfdx_lwc/sfdx_lwc.js"
+            ],
+            "c/captureSignature": [
+                "captureSignature/captureSignature.js"
             ]
         }
     },
