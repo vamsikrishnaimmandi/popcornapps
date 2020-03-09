@@ -60,4 +60,5 @@ node
                 error 'permset:assign failed'
             }
         }
-}
+     }
+ }
