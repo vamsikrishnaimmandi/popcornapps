@@ -6,6 +6,10 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                echo CONNECTED_APP_CONSUMER_KEY_DH
+                echo HUB_ORG_DH
+                echo JWT_CRED_ID_DH
+                echo SFDC_HOST_DH
                 echo 'Building'
             }
         }
