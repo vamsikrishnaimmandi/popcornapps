@@ -7,5 +7,6 @@ public with sharing class LoginFlows {
        // a=[SELECT  Id   From User where Id='0052v00000ezeGl'];
         objuser.Has_Accepted_Terms__c=true;
     update objuser;
+    //fake
 }
 }
