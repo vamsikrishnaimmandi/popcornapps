@@ -18,19 +18,20 @@ node
 
     withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')])
      {
-        stage('Create Scratch Org')
+        stage('Need to authorize')
          {
                 echo BUILD_NUMBER
                 echo RUN_ARTIFACT_DIR
-                 echo CONNECTED_APP_CONSUMER_KEY_DH
+                echo CONNECTED_APP_CONSUMER_KEY_DH
                 echo HUB_ORG_DH
                 echo JWT_CRED_ID_DH
                 echo SFDC_HOST_DH
-            rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-            if (rc != 0) { error 'hub org authorization failed' }
+            rc = sh returnStatus: true, script:"${toolbelt}/sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --jwtkeyfile ${jwt_key_file} --username ${HUB_ORG} --instanceurl ${SFDC_HOST} --setdefaultdevhubusername"
+            if (rc != 0)
+             { error 'hub org authorization failed' }
 
             // need to pull out assigned username
-            rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:org:create --definitionfile config/project-scratch-def.json --json --setdefaultusername"
+           /* rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:org:create --definitionfile config/project-scratch-def.json --json --setdefaultusername"
             printf rmsg
             def jsonSlurper = new JsonSlurperClassic()
             def robj = jsonSlurper.parseText(rmsg)
@@ -40,7 +41,7 @@ node
              }
             SFDC_USERNAME=robj.result.username
             robj = null
-
+*/
         }
 
         stage('Push To Test Org')
