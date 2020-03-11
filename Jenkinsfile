@@ -32,10 +32,6 @@ node {
             }
             if (rc != 0) { error 'hub org authorization failed' }
 
-			  
-            printf rmsg
-            println('Hello from a Job DSL script!')
-            println(rmsg)
         }
     }
 }
