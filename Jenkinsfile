@@ -29,7 +29,7 @@ node {
             if (rc != 0)
              { error 'hub org authorization failed' }
              sh "sfdx essentials:filter-metadatas -i ./src -o ./package -p ./src/package.xml"
-             rd=returnStatus:false,script: if(-d ./package/classes)
+             rd=returnStatus:false,script:"" if[-d ./package/classes]
                                             {
                                                 sfdx force:mdapi:deploy -d ./package -u sit -l RunSpecifiedTests -w -1 -g -r \$(sh testclasses.sh ./package/classes)
                                             }
