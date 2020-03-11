@@ -1,3 +1,4 @@
+
 #!groovy
 import groovy.json.JsonSlurperClassic
 node {
@@ -22,25 +23,24 @@ node {
         // when running in multi-branch job, one must issue this command
         checkout scm
     }
-
+ 
     withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
         stage('Deploye Code') {
-            if (isUnix()) {
-                rc = sh returnStatus: true, script: "${toolbelt} force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-            }else{
-                 rc = bat returnStatus: true, script: "\"${toolbelt}\" force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile \"${jwt_key_file}\" --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-            }
-            if (rc != 0) { error 'hub org authorization failed' }
-
+            rc = bat returnStatus: true, script: "\"${toolbelt}\" force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile \"${jwt_key_file}\" --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
+            if (rc != 0)
+             { error 'hub org authorization failed' }
+             sh "sfdx essentials:filter-metadatas -i ./src -o ./package -p ./src/package.xml"
+             rd=returnStatus:false,script: if(-d ./package/classes)
+                                            {
+                                                sfdx force:mdapi:deploy -d ./package -u sit -l RunSpecifiedTests -w -1 -g -r \$(sh testclasses.sh ./package/classes)
+                                            }
+                                            else
+                                            {
+                                                sfdx force:mdapi:deploy -d ./package -u sit -l NoTestRun -w -1 -g 
+                                               // rmsg = bat returnStdout: true, script: "\"${toolbelt}\" force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
+                                            }
 			println rc
-			
-			// need to pull out assigned username
-			if (isUnix()) {
-				rmsg = sh returnStdout: true, script: "${toolbelt} force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
-			}else{
-			   rmsg = bat returnStdout: true, script: "\"${toolbelt}\" force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
-			}
-			  
+		     			  
             printf rmsg
             println('Hello from a Job DSL script!')
             println(rmsg)
